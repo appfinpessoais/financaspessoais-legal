@@ -69,6 +69,10 @@ $paginas = @(
 )
 foreach ($p in $paginas) {
     $r = Converter-Nota (Join-Path $Vault $p.Nota)
+    if ($p.Saida -eq 'termos.html') {
+        # Nos termos, cada menção à política vira link para a página dela (fora dos títulos).
+        $r.Html = [regex]::Replace($r.Html, '(?i)(?<!<h\d>[^<]*)\b(política de privacidade)\b', '<a href="privacidade.html">$1</a>')
+    }
     $saida = Join-Path $PSScriptRoot $p.Saida
     [IO.File]::WriteAllText($saida, (Montar-Pagina "$($p.Aba) · Finanças Pessoais" $r.Html), $utf8)
     "Gerado: $($p.Saida) ($($r.Titulo))"
